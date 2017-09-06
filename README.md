@@ -61,5 +61,11 @@ I also had problems with the amount of data I needed to store the information fo
 ### fireflies_sync_display.py
 The `fireflies_sync_display.py` version shows the fireflies on the 5x5 LED display on the micro:bit
 
-### fireflies_sync_neopixels.py
-(Not available yet.)
+### fireflies_sync_neopixels_yellow.py
+`fireflies_sync_neopixels_yellow.py` uses the `neopixel` library to show the fireflies on WS2812 (NeoPixel) LEDs. All code (and imports) used to show the fireflies on the 5x5 LED display is removed. The fireflies are all yellow. To allow the micro:bit board to flash up to 25 LEDs simultaneously that are directly connected to the board, the brightness of the LEDs is limited to roughly 10% of the maximum possible brightness (27 vs 255). Note this [warning](http://microbit-micropython.readthedocs.io/en/latest/neopixel.html): "Do not use the 3v connector on the Microbit to power any more than 8 Neopixels at a time. If you wish to use more than 8 Neopixels, you must use a separate 3v-5v power supply for the Neopixel power pin." I have interpreted this to mean 8 WS2812 LEDs at full brightness (a brightness of 255 in each R, G, and B channel). And that by limiting the brightness of the LEDs I can support more than 8. I have not yet seen an issue with driving 25 WS2812 LEDs from on micro:bit at the lower brightness.
+#### Message colors
+The application will show special colors to indicate when certain messages are received by other micro:bit boards running the firefly appplication. The colors are shown on all LEDs and only shown for a moment.
+* **Hello**: Dim blue when the board receives a "hello" message. 
+* **Random**: Dim green when the board receives a "random" message. 
+* **All On** Dim white when the board receives a "all on" message
+
