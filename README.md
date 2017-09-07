@@ -1,10 +1,15 @@
 # MicroBit Fireflies
 
-This project uses one or more micro:bit boards to simulate fireflies, either using the on-board LEDs ("display") or WS2811 (NeoPixel) RGB LEDs. It was inspired by the [Micro:Bit firefly demo](http://microbit-micropython.readthedocs.io/en/latest/tutorials/radio.html#fireflies) and [Nicky Case's Firefly simulation](http://ncase.me/fireflies/)
+This project uses one or more micro:bit boards to simulate fireflies, either using the on-board LEDs or WS2811 RGB LEDs (NeoPixels). It was inspired by the [Micro:Bit firefly demo](http://microbit-micropython.readthedocs.io/en/latest/tutorials/radio.html#fireflies) and [Nicky Case's Firefly simulation](http://ncase.me/fireflies/)
 
-I was intrigued by the idea of creating up to one hundred synchronized fireflies, but realized that if each firefly required one micro:bit that this would be too costly. I realized that since the micro:bit can control WS2811 LEDs that with one micro:bit I could simulate multiply fireflies. If I could get one board to simulate 25 fireflies, then I would only need four boards.
+I was intrigued by the idea of creating large numbers of synchronized fireflies. Using one micro:bit per firefly would be both too expensive and too impractical (e.g., to reprogram). Instead each micro:bit simulates multiple (25) fireflies, and multiple micro:bit boards communicate via radio so that all of the fireflies become synchronized.
+The basic application uses the on-board LEDs, where each LED represents one firefly. The NeoPixel versions of the application uses the neopixel library to drive external LEDs.
 
-The first step was to create a program that would use the 5x5 LED display on the micro:bit board. Each LED would act as an independent firefly.
+## Available versions
+* **fireflies_sync_display.py**: Uses on-board LEDs
+* **fireflies_sync_neopixels_yellow.py**: Uses WS2812 LEDs, always yellow
+* **fireflies_sync_neopixels_random.py**: Uses WS2812 LEDs, with random colors
+* **fireflies_sync_neopixels_converge.py**: Uses WS2812 LEDs, which start as random colors but eventually converge to a single random color
 
 ## Basic Operation
 Each firefly has its own timer. When the timer counts down to zero, the firefly flashes and notifies its neighbors that it flashed. When a firefly is notified that its neighbor flashed, it adjusts it timer by a very small percentage. Those rules are sufficient to get 25 random fireflies to flash in sync. To get multiple boards to synchronize, some of the fireflies will also broadcast a radio message that says "I blinked". The program will check the radio for a message. If it sees an "I blinked" message it notifies some of the fireflies on the board. After about five minutes, a board will randomize the timers for its fireflies and send a "randomize" message to the other boards, which restarts the self-synchronization behavior again.
@@ -68,4 +73,10 @@ The application will show special colors to indicate when certain messages are r
 * **Hello**: Dim blue when the board receives a "hello" message. 
 * **Random**: Dim green when the board receives a "random" message. 
 * **All On** Dim white when the board receives a "all on" message
+Note that different WS2812 LEDs use different channel (RGB vs GRB) sequences. This will result in different message colors (green will be red and vice versa).
 
+### fireflies_sync_neopixels_random.py
+`fireflies_sync_neopixels_random.py` selects a random color for each firefly and always blinks the firefly in that color until the next randomize call.
+
+### fireflies_sync_neopixels_converge.py
+`fireflies_sync_neopixels_converge.py` selects a random color for each firefly and selects a common random color. As the fireflies flash the color of each firefly converges on the common color. When fireflies are randomized again a new common random color is selected. Note that the common random color is not communicated to other boards.
